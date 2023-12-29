@@ -1,13 +1,39 @@
 const selections = document.querySelectorAll(".selection");
 const result = document.querySelector(".result");
-const h1 = document.querySelector("h1");
-const round = document.querySelector("h2");
+const h1 = document.querySelector(".winner");
+const round = document.querySelector(".round");
 const score = document.querySelector("h3");
+const selectionsInfo = document.querySelector(".selections-info");
+const finalWinner = document.querySelector(".final-winner");
+const startBtn = document.querySelector(".start");
+
+let currRound = 0;
+let userScore = 0;
+let computerScore = 0;
 
 selections.forEach(button => {
-    console.log(button.textContent)
+    button.disabled = true;
     button.addEventListener("click", () => playRound(button.textContent, getComputerChoice()))
 })
+
+startBtn.addEventListener("click", handleBtnClick);
+
+function handleBtnClick() {
+    selections.forEach(x => x.disabled = false);
+
+    if (startBtn.textContent === "Play") {
+        startBtn.textContent = "Reset Game";
+    } else {
+        currRound = 0;
+        userScore = 0;
+        computerScore = 0;
+        h1.textContent = "";
+        round.textContent = "";
+        score.textContent = "";
+        selectionsInfo.textContent = "";
+        finalWinner.textContent = "";
+    }
+}
 
 function getComputerChoice() {
     const randomNumber = Math.floor(Math.random() * 3);
@@ -22,42 +48,40 @@ function getComputerChoice() {
 }
 
 function playRound(playerSelection, computerSelection) {
-    console.log(`PLAYER SELECTION: ${playerSelection}`)
+    let gameResult = "";
+
+    round.textContent = `Round ${currRound + 1}`;
     const player = playerSelection.toLowerCase();
     const computer = computerSelection;
 
-    console.log(`You: ${player.charAt(0).toUpperCase() + player.slice(1)}\nComputer: ${computer.charAt(0).toUpperCase() + computer.slice(1)}`);
+    score.textContent = `Your score: ${userScore}\nComputer score: ${computerScore}`;
+
+    selectionsInfo.textContent = `Computer: ${computer.charAt(0).toUpperCase() + computer.slice(1)} | You: ${player.charAt(0).toUpperCase() + player.slice(1)}`;
 
     if (player === computer) {
         h1.textContent = "It's a tie! Let's play again.";
-        // playRound(prompt("Make your choice"), getComputerChoice());
     } else if (player === "rock" && computer === "scissors" || player === "paper" && computer === "rock" || player === "scissors" && computer === "paper") {
         h1.textContent = "You win!";
-        return "You win!";
+        userScore += 1;
+        currRound++;
+        gameResult = "You win!";
     } else {
         h1.textContent = "Computer wins!";
-        return "Computer wins!";
+        computerScore += 1;
+        currRound++; 
+        gameResult = "Computer wins!";
     }
+
+    if (currRound === 5) {
+        finalWinner.textContent = userScore > computerScore ? "You won the game!" : "The computer won the game.";
+        selections.forEach(button => {
+            button.disabled = true;
+        })
+        h1.textContent = "";
+        round.textContent = "";
+        selectionsInfo.textContent = "";
+        return;
+    }
+
+    return gameResult;
 }
-
-// function game() {
-//     let userScore = 0;
-//     let computerScore = 0;
-
-//     for (let i = 0; i < 5; i++) {
-//         round.textContent = `Round ${i + 1}`
-//         score.textContent = `Your score: ${userScore}\nComputer score: ${computerScore}`;
-
-//         const result = playRound(prompt("Make your choice: Rock, Scissors or Paper"), getComputerChoice());
-
-//         if (result === "You win!") {
-//             userScore += 1;
-//         } else if (result === "Computer wins!") {
-//             computerScore += 1;
-//         }
-//     }
-
-//     h1.textContent = userScore > computerScore ? "You won the game!" : "The computer won the game.";
-// }
-
-// game();
